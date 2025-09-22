@@ -56,6 +56,7 @@ interface ExportColumn {
         IconFieldModule,
         ConfirmDialogModule
     ],
+ providers: [ProductService,MessageService, ConfirmationService],
   templateUrl: './to-do.component.html',
   styleUrl: './to-do.component.scss'
 })
@@ -203,7 +204,6 @@ export class ToDoComponent implements OnInit {
                 return 'info';
         }
     }
-
     saveProduct() {
         this.submitted = true;
         let _products = this.products();
