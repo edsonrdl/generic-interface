@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: .  # ← Contexto na RAIZ do projeto
+      dockerfile: Dockerfile
+    container_name: generic-interface
+    ports:
+      - "4200:4200"
+    restart: unless-stopped
+    networks:
+        - minha_rede_dev
+networks:
+  minha_rede_dev:
+    external: true
