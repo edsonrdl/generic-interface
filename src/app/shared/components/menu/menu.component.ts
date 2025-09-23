@@ -23,7 +23,7 @@ export class MenuComponent {
             {
                 label: 'lista de tarefas',
                 items: [
-                    { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] }
+                    { label: 'Gerenciar Tarefas', icon: 'pi pi-fw pi-list', routerLink: ['/to-do'] }
                 ]
             // },
             // {
