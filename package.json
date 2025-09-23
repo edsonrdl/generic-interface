@@ -22,6 +22,7 @@
     "@angular/ssr": "^19.2.16",
     "@primeng/themes": "^20.1.2",
     "express": "^4.18.2",
+    "primeicons": "^7.0.0",
     "primeng": "^19.0.0",
     "rxjs": "~7.8.0",
     "tailwindcss-primeui": "^0.6.1",
