@@ -17,13 +17,13 @@ export class MenuComponent {
     ngOnInit() {
         this.model = [
             {
-                label: 'Home',
+                label: 'HOME',
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
             },
             {
-                label: 'lista de tarefas',
+                label: 'GESTÃO DE PESSOAS',
                 items: [
-                    { label: 'Gerenciar Tarefas', icon: 'pi pi-fw pi-list', routerLink: ['/to-do'] }
+                    { label: 'Usuários', icon: 'pi pi-fw pi-list', routerLink: ['/to-do'] }
                 ]
             // },
             // {
