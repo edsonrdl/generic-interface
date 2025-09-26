@@ -5,6 +5,7 @@ import { MenuItem } from 'primeng/api';
 import { StyleClassModule  } from 'primeng/styleclass';
 import { LayoutService } from '../../components/service/layout.service';
 
+
 @Component({
   selector: 'app-top-bar',
     standalone: true,
