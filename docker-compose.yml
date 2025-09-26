@@ -2,7 +2,7 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: .  # ← Contexto na RAIZ do projeto
+      context: .
       dockerfile: Dockerfile
     container_name: generic-interface
     ports:
