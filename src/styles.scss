@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@import './tailwind.css';
-@import '../src/app/sass/components/layout.scss';
-@import 'primeicons/primeicons.css';
-@import '../src/app/sass/demo/demo.scss';
+@use './tailwind.css';
+@use '../src/app/sass/components/layout.scss';
+@use 'primeicons/primeicons.css';
+@use '../src/app/sass/demo/demo.scss';
