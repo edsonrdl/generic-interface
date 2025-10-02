@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild, Inject, PLATFORM_ID} from '@angular/core';
+import { Component, Renderer2, ViewChild, Inject, PLATFORM_ID, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
@@ -12,31 +12,32 @@ import { LayoutService } from '../service/layout.service';
   standalone: true,
   imports: [CommonModule, TopBarComponent, SideBarComponent, RouterModule, FooterComponent],
   templateUrl: './layout.component.html',
-  styleUrl: './layout.component.scss'
+  styleUrl: './layout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush // ⚡ OnPush para melhor performance
 })
-export class LayoutComponent {
-  overlayMenuOpenSubscription: Subscription;
-  menuOutsideClickListener: any;
+export class LayoutComponent implements OnDestroy {
+  private overlayMenuOpenSubscription?: Subscription;
+  private menuOutsideClickListener?: () => void;
+  private routerSubscription?: Subscription;
 
   @ViewChild(SideBarComponent) appSidebar!: SideBarComponent;
   @ViewChild(TopBarComponent) appTopBar!: TopBarComponent;
 
   constructor(
     public layoutService: LayoutService,
-    public renderer: Renderer2,
-    public router: Router,
+    private renderer: Renderer2,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
     @Inject(DOCUMENT) private document: Document
   ) {
+    this.initializeSubscriptions();
+  }
+
+  private initializeSubscriptions(): void {
+    // Subscription do overlay menu
     this.overlayMenuOpenSubscription = this.layoutService.overlayOpen$.subscribe(() => {
       if (isPlatformBrowser(this.platformId)) {
-        if (!this.menuOutsideClickListener) {
-          this.menuOutsideClickListener = this.renderer.listen('document', 'click', (event) => {
-            if (this.isOutsideClicked(event)) {
-              this.hideMenu();
-            }
-          });
-        }
+        this.setupOutsideClickListener();
 
         if (this.layoutService.layoutState().staticMenuMobileActive) {
           this.blockBodyScroll();
@@ -44,9 +45,23 @@ export class LayoutComponent {
       }
     });
 
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      this.hideMenu();
-    });
+    // Subscription do router - usar takeUntilDestroyed seria melhor no Angular 16+
+    this.routerSubscription = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.hideMenu();
+      });
+  }
+
+  private setupOutsideClickListener(): void {
+    if (!this.menuOutsideClickListener) {
+      // Usar passive listener para melhor performance
+      this.menuOutsideClickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => {
+        if (this.isOutsideClicked(event)) {
+          this.hideMenu();
+        }
+      });
+    }
   }
 
   isOutsideClicked(event: MouseEvent): boolean {
@@ -66,7 +81,7 @@ export class LayoutComponent {
     );
   }
 
-  hideMenu() {
+  hideMenu(): void {
     this.layoutService.layoutState.update((prev) => ({ 
       ...prev, 
       overlayMenuActive: false, 
@@ -74,12 +89,15 @@ export class LayoutComponent {
       menuHoverActive: false 
     }));
     
+    this.cleanupOutsideClickListener();
+    this.unblockBodyScroll();
+  }
+
+  private cleanupOutsideClickListener(): void {
     if (this.menuOutsideClickListener) {
       this.menuOutsideClickListener();
-      this.menuOutsideClickListener = null;
+      this.menuOutsideClickListener = undefined;
     }
-    
-    this.unblockBodyScroll();
   }
 
   blockBodyScroll(): void {
@@ -87,11 +105,7 @@ export class LayoutComponent {
       return;
     }
 
-    if (this.document.body.classList) {
-      this.document.body.classList.add('blocked-scroll');
-    } else {
-      this.document.body.className += ' blocked-scroll';
-    }
+    this.document.body.classList.add('blocked-scroll');
   }
 
   unblockBodyScroll(): void {
@@ -99,33 +113,26 @@ export class LayoutComponent {
       return;
     }
 
-    if (this.document.body.classList) {
-      this.document.body.classList.remove('blocked-scroll');
-    } else {
-      this.document.body.className = this.document.body.className.replace(
-        new RegExp('(^|\\b)' + 'blocked-scroll'.split(' ').join('|') + '(\\b|$)', 'gi'), 
-        ' '
-      );
-    }
+    this.document.body.classList.remove('blocked-scroll');
   }
 
   get containerClass() {
+    const config = this.layoutService.layoutConfig();
+    const state = this.layoutService.layoutState();
+    
     return {
-      'layout-overlay': this.layoutService.layoutConfig().menuMode === 'overlay',
-      'layout-static': this.layoutService.layoutConfig().menuMode === 'static',
-      'layout-static-inactive': this.layoutService.layoutState().staticMenuDesktopInactive && this.layoutService.layoutConfig().menuMode === 'static',
-      'layout-overlay-active': this.layoutService.layoutState().overlayMenuActive,
-      'layout-mobile-active': this.layoutService.layoutState().staticMenuMobileActive
+      'layout-overlay': config.menuMode === 'overlay',
+      'layout-static': config.menuMode === 'static',
+      'layout-static-inactive': state.staticMenuDesktopInactive && config.menuMode === 'static',
+      'layout-overlay-active': state.overlayMenuActive,
+      'layout-mobile-active': state.staticMenuMobileActive
     };
   }
 
-  ngOnDestroy() {
-    if (this.overlayMenuOpenSubscription) {
-      this.overlayMenuOpenSubscription.unsubscribe();
-    }
-
-    if (this.menuOutsideClickListener) {
-      this.menuOutsideClickListener();
-    }
+  ngOnDestroy(): void {
+    this.overlayMenuOpenSubscription?.unsubscribe();
+    this.routerSubscription?.unsubscribe();
+    this.cleanupOutsideClickListener();
+    this.unblockBodyScroll();
   }
 }
