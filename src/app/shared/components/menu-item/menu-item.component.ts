@@ -31,7 +31,7 @@ import { LayoutService } from '../service/layout.service';
       transition('collapsed <=> expanded', animate('400ms cubic-bezier(0.86, 0, 0.07, 1)'))
     ])
   ]
-  // REMOVED: providers: [LayoutService] - This was creating new instances
+
 })
 export class MenuItemComponent implements OnInit, OnDestroy {
 
@@ -48,13 +48,13 @@ export class MenuItemComponent implements OnInit, OnDestroy {
 
   constructor(
     public router: Router,
-    private layoutService: LayoutService // This will now use the singleton instance
+    private layoutService: LayoutService 
   ) {}
 
   ngOnInit() {
     this.key = this.parentKey ? this.parentKey + '-' + this.index : String(this.index);
 
-    // Initialize subscriptions in ngOnInit instead of constructor
+
     this.menuSourceSubscription = this.layoutService.menuSource$.subscribe((value) => {
       Promise.resolve(null).then(() => {
         if (value.routeEvent) {
@@ -79,7 +79,6 @@ export class MenuItemComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Check initial route state
     if (this.item?.routerLink) {
       this.updateActiveStateFromRoute();
     }
@@ -102,24 +101,23 @@ export class MenuItemComponent implements OnInit, OnDestroy {
         this.layoutService.onMenuStateChange({ key: this.key, routeEvent: true });
       }
     } catch (error) {
-      // Handle potential router errors gracefully
+   
       console.warn('Error checking route active state:', error);
     }
   }
 
   itemClick(event: Event) {
-    // Avoid processing disabled items
+
     if (this.item?.disabled) {
       event.preventDefault();
       return;
     }
 
-    // Execute command
+ 
     if (this.item?.command) {
       this.item.command({ originalEvent: event, item: this.item });
     }
 
-    // Toggle active state
     if (this.item?.items) {
       this.active = !this.active;
     }
@@ -137,7 +135,7 @@ export class MenuItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Clean up all subscriptions
+ 
     if (this.menuSourceSubscription) {
       this.menuSourceSubscription.unsubscribe();
     }
