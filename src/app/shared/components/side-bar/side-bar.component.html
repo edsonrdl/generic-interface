@@ -1,3 +1,18 @@
-<div class="layout-sidebar">
+<!-- sidebar.component.html -->
+@defer (on viewport; prefetch on idle) {
+    <div class="layout-sidebar">
         <app-menu></app-menu>
-</div>
+    </div>
+} @placeholder {
+    <div class="sidebar-skeleton">
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+    </div>
+} @loading (minimum 200ms) {
+    <div class="sidebar-skeleton">
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+    </div>
+}

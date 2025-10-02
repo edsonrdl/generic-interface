@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Renderer2, ViewChild, Inject, PLATFORM_ID} from '@angular/core';
 import { CommonModule, isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
