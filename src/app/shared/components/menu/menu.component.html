@@ -1,14 +1,17 @@
 <ul class="layout-menu">
-    @defer () {
-    <ng-container *ngFor="let item of model; let i = index">
-        <li app-menu-item *ngIf="!item.separator" [item]="item" [index]="i" [root]="true">
-        </li>
-        <li *ngIf="item.separator" class="menu-separator"></li>
+  @defer (on idle) {
+    <ng-container *ngFor="let item of model; let i = index; trackBy: trackByIndex">
+      <li app-menu-item 
+          *ngIf="!item.separator" 
+          [item]="item" 
+          [index]="i" 
+          [root]="true">
+      </li>
+      <li *ngIf="item.separator" class="menu-separator"></li>
     </ng-container>
-    }@placeholder {
+  } @placeholder {
     <div class="menu-skeleton">
-        <div class="skeleton-item" *ngFor="let i of [1,2,3]"></div>
+      <div class="skeleton-item" *ngFor="let i of [1,2,3]"></div>
     </div>
-    }
-
+  }
 </ul>
