@@ -1,15 +1,20 @@
 import { Routes } from '@angular/router';
-import { LayoutComponent } from './shared/components/layout/layout.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: LayoutComponent,
+    loadComponent: () => import('./shared/components/layout/layout.component')
+      .then(m => m.LayoutComponent),
     children: [
-    
+      // {
+      //   path: '',
+      //   loadComponent: () => import('./features/dashboard/dashboard.component')
+      //     .then(m => m.DashboardComponent)
+      // },
       {
         path: 'to-do',
-       loadComponent: () => import('./features/to-do/to-do.component').then(c => c.ToDoComponent)
+        loadComponent: () => import('./features/to-do/to-do.component')
+          .then(m => m.ToDoComponent)
       }
     ]
   },
