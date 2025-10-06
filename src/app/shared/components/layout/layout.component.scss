@@ -1,13 +1,51 @@
-// @use '../../../assets/components/variables/common';
-// @use '../../../assets/components/variables/_light';
-// @use '../../../assets/components/variables/_dark';
-// @use '../../../assets/components/mixins' as *;
-// @use '../../../assets/components/_preloading';
-// @use '../../../assets/components/_core';
-// @use '../../../assets/components/_main';
-// @use '../top-bar/top-bar.component.scss';
-// @use '../../../assets/components/_menu';
-// @use '../../../assets/components/_footer';
-// @use '../../../assets/components/_responsive';
-// @use '../../../assets/components/_utils';
-// @use '../../../assets/components/_typography';
+.sidebar-skeleton {
+    width: 20rem;
+    height: calc(100vh - 8rem);
+    position: fixed;
+    top: 6rem;
+    left: 2rem;
+    background-color: var(--surface-overlay);
+    border-radius: var(--content-border-radius);
+    padding: 0.5rem 1.5rem;
+
+    .skeleton-item {
+        height: 40px;
+        margin: 0.75rem 0;
+        border-radius: var(--content-border-radius);
+        background: linear-gradient(
+            90deg,
+            var(--surface-ground) 25%,
+            var(--surface-border) 50%,
+            var(--surface-ground) 75%
+        );
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+    }
+
+    @keyframes skeleton-loading {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+}
+
+.footer-placeholder {
+    width: 100%;
+    padding: 1rem;
+
+    .skeleton-footer {
+        height: 60px;
+        border-radius: var(--content-border-radius);
+        background: linear-gradient(
+            90deg,
+            var(--surface-ground) 25%,
+            var(--surface-border) 50%,
+            var(--surface-ground) 75%
+        );
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+    }
+}

@@ -1,8 +1,14 @@
 @use 'mixins' as *;
 
+// Variáveis locais para reutilização
+$sidebar-width: 20rem;
+$sidebar-padding: 0.5rem 1.5rem;
+$menuitem-padding: 0.75rem 1rem;
+$submenu-indent: 1rem;
+
 .layout-sidebar {
     position: fixed;
-    width: 20rem;
+    width: $sidebar-width;
     height: calc(100vh - 8rem);
     z-index: 999;
     overflow-y: auto;
@@ -14,7 +20,56 @@
         left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
     border-radius: var(--content-border-radius);
-    padding: 0.5rem 1.5rem;
+    padding: $sidebar-padding;
+
+    // Scrollbar customizada (opcional)
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--surface-border);
+        border-radius: 10px;
+    }
+}
+
+// Skeleton para lazy loading
+.sidebar-skeleton {
+    width: $sidebar-width;
+    height: calc(100vh - 8rem);
+    position: fixed;
+    top: 6rem;
+    left: 2rem;
+    background-color: var(--surface-overlay);
+    border-radius: var(--content-border-radius);
+    padding: $sidebar-padding;
+
+    .skeleton-item {
+        height: 40px;
+        margin: 0.75rem 0;
+        border-radius: var(--content-border-radius);
+        background: linear-gradient(
+            90deg,
+            var(--surface-ground) 25%,
+            var(--surface-border) 50%,
+            var(--surface-ground) 75%
+        );
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+    }
+
+    @keyframes skeleton-loading {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
 }
 
 .layout-menu {
@@ -66,7 +121,7 @@
             outline: 0 none;
             color: var(--text-color);
             cursor: pointer;
-            padding: 0.75rem 1rem;
+            padding: $menuitem-padding;
             border-radius: var(--content-border-radius);
             transition:
                 background-color var(--element-transition-duration),
@@ -74,6 +129,12 @@
 
             .layout-menuitem-icon {
                 margin-right: 0.5rem;
+                color: var(--text-color-secondary);
+                transition: color var(--element-transition-duration);
+            }
+
+            .layout-menuitem-text {
+                flex: 1;
             }
 
             .layout-submenu-toggler {
@@ -85,60 +146,93 @@
             &.active-route {
                 font-weight: 700;
                 color: var(--primary-color);
+
+                .layout-menuitem-icon {
+                    color: var(--primary-color);
+                }
             }
 
             &:hover {
                 background-color: var(--surface-hover);
+
+                .layout-menuitem-icon {
+                    color: var(--text-color);
+                }
             }
 
             &:focus {
                 @include focused-inset();
             }
+
+            &:active {
+                background-color: var(--surface-ground);
+            }
         }
 
+        // Níveis de submenu com indentação progressiva
         ul {
             overflow: hidden;
             border-radius: var(--content-border-radius);
 
-            li {
-                a {
-                    margin-left: 1rem;
-                }
+            // Nível 1
+            li a {
+                margin-left: $submenu-indent;
+            }
 
-                li {
-                    a {
-                        margin-left: 2rem;
-                    }
+            // Nível 2
+            li li a {
+                margin-left: $submenu-indent * 2;
+            }
 
-                    li {
-                        a {
-                            margin-left: 2.5rem;
-                        }
+            // Nível 3
+            li li li a {
+                margin-left: $submenu-indent * 2.5;
+            }
 
-                        li {
-                            a {
-                                margin-left: 3rem;
-                            }
+            // Nível 4
+            li li li li a {
+                margin-left: $submenu-indent * 3;
+            }
 
-                            li {
-                                a {
-                                    margin-left: 3.5rem;
-                                }
+            // Nível 5
+            li li li li li a {
+                margin-left: $submenu-indent * 3.5;
+            }
 
-                                li {
-                                    a {
-                                        margin-left: 4rem;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            // Nível 6
+            li li li li li li a {
+                margin-left: $submenu-indent * 4;
             }
         }
     }
 }
 
+// Menu skeleton para loading state
+.menu-skeleton {
+    padding: 1rem;
+
+    .skeleton-item {
+        height: 36px;
+        margin: 0.5rem 0;
+        border-radius: var(--content-border-radius);
+        background: linear-gradient(
+            90deg,
+            var(--surface-ground) 25%,
+            var(--surface-border) 50%,
+            var(--surface-ground) 75%
+        );
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+
+        &:first-child {
+            width: 60%;
+            height: 20px;
+            opacity: 0.7;
+        }
+    }
+}
+
+// Animações de submenu
 .layout-submenu-enter-from,
 .layout-submenu-leave-to {
     max-height: 0;
@@ -157,4 +251,42 @@
 .layout-submenu-enter-active {
     overflow: hidden;
     transition: max-height 1s ease-in-out;
+}
+
+// Responsividade
+@media screen and (max-width: 991px) {
+    .layout-sidebar {
+        left: 0;
+        transform: translateX(-100%);
+
+        &.active {
+            transform: translateX(0);
+        }
+    }
+}
+
+// Estado de loading
+.layout-sidebar-loading {
+    pointer-events: none;
+    opacity: 0.6;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--surface-border);
+        border-top-color: var(--primary-color);
+        border-radius: 50%;
+        animation: spinner 0.8s linear infinite;
+    }
+
+    @keyframes spinner {
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
 }

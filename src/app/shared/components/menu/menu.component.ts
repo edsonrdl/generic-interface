@@ -1,30 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({
-  selector: 'app-menu',
-  imports: [CommonModule,MenuItemComponent, RouterModule],
-  templateUrl: './menu.component.html',
-  styleUrl: './menu.component.scss'
+    selector: 'app-menu',
+    imports: [CommonModule, MenuItemComponent, RouterModule],
+    templateUrl: './menu.component.html',
+    styleUrl: './menu.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuComponent {
 
- model: MenuItem[] = [];
-
-    ngOnInit() {
-        this.model = [
-            {
-                label: 'HOME',
-                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
-            },
-            {
-                label: 'GESTÃO DE PESSOAS',
-                items: [
-                    { label: 'Usuários', icon: 'pi pi-fw pi-list', routerLink: ['/to-do'] }
-                ]
+    readonly model: MenuItem[] = [
+        {
+            label: 'HOME',
+            items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
+        },
+        {
+            label: 'GESTÃO DE PESSOAS',
+            items: [
+                { label: 'Usuários', icon: 'pi pi-fw pi-list', routerLink: ['/to-do'] }
+            ]
             // },
             // {
             //     label: 'Pages',
@@ -117,7 +115,9 @@ export class MenuComponent {
             //             ]
             //         }
             //     ]
-             }
-        ];
+        }
+    ];
+    trackByIndex(index: number): number {
+        return index;
     }
 }
